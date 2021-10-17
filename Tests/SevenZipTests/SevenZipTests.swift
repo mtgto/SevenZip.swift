@@ -1,11 +1,11 @@
 import XCTest
-@testable import LZMA
+@testable import SevenZip
 
-final class LZMATests: XCTestCase {
+final class SevenZipTests: XCTestCase {
     func testExample() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(LZMA().text, "Hello, World!")
+        XCTAssertEqual(SevenZip().text, "Hello, World!")
     }
 }

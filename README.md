@@ -1,16 +1,22 @@
-# LZMA for Swift
+# SevenZip.swift
 
-Swift library wraps [LZMA SDK](https://www.7-zip.org/sdk.html).
+Swift library to extract 7zip archive using [LZMA SDK](https://www.7-zip.org/sdk.html).
 
 ## Feature
 
+TBD
+
 ## Usage
+
+TBD
 
 ## Installation
 
+TBD
+
 ### Swift Package Manager
 
-Add `https://github.com/mtgto/lzma.swift` to your Package.swift.
+Add `https://github.com/mtgto/SevenZip.swift` to your Package.swift.
 
 ## Related projects
 
