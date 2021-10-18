@@ -98,6 +98,7 @@ let package = Package(
         ),
         .testTarget(
             name: "SevenZipTests",
-            dependencies: ["SevenZip"]),
+            dependencies: ["SevenZip"],
+            resources: [.process("fixture")]),
     ]
 )
