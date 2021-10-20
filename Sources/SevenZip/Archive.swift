@@ -35,8 +35,15 @@ public class Archive {
         }
         FileInStream_CreateVTable(&self.archiveStream)
         LookToRead2_CreateVTable(&self.lookStream, 0)
-        self.lookStream.buf = nil
-        self.lookStream.bufSize = 0
+        let bufSize = 1 << 18
+        guard let buf = self.allocImp.Alloc(nil, bufSize)?.assumingMemoryBound(to: UInt8.self) else {
+            throw LZMAError.noMemory
+        }
+        self.lookStream.buf = buf
+        self.lookStream.bufSize = bufSize
+        defer {
+            self.allocImp.Free(nil, buf)
+        }
         withUnsafePointer(to: &self.archiveStream.vt) { ptr in
             self.lookStream.realStream = ptr
         }
@@ -55,7 +62,7 @@ public class Archive {
                 SzFree(nil, temp)
             }
             SzArEx_GetFileNameUtf16(&db, Int(i), temp)
-            guard let filename = String(data: Data(bytes: temp, count: len * MemoryLayout<UInt16>.size), encoding: .utf16LittleEndian) else {
+            guard let filename = String(data: Data(bytes: temp, count: len * MemoryLayout<UInt16>.size - 1), encoding: .utf16LittleEndian) else {
                 throw LZMAError.badFile
             }
             let filesize = SevenZip_SzArEx_GetFileSize(&self.db, Int(i))
@@ -74,15 +81,14 @@ public class Archive {
     }
     
     // TODO: super large file
-    public func extract(entry: Entry) throws -> Data {
-        let inputBufSize = 1 << 18
+    public func extract(entry: Entry, bufSize: Int = 1 << 18) throws -> Data {
         var offset: Int = 0
         var outSizeProcessed: Int = 0
-        guard let buf = self.allocImp.Alloc(nil, inputBufSize)?.assumingMemoryBound(to: UInt8.self) else {
+        guard let buf = self.allocImp.Alloc(nil, bufSize)?.assumingMemoryBound(to: UInt8.self) else {
             throw LZMAError.noMemory
         }
         self.lookStream.buf = buf
-        self.lookStream.bufSize = inputBufSize
+        self.lookStream.bufSize = bufSize
         defer {
             self.allocImp.Free(nil, buf)
         }
