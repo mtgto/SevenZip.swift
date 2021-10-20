@@ -14,8 +14,7 @@ private var moduleInit: Void = {
     CrcGenerateTable()
 }()
 
-public struct Archive {
-    private static let inputBufSize = 1 << 18
+public class Archive {
     private(set) var entries: [Entry] = []
     private var allocImp = ISzAlloc(Alloc: SzAlloc, Free: SzFree)
     private var allocTempImp = ISzAlloc(Alloc: SzAlloc, Free: SzFree)
@@ -25,7 +24,7 @@ public struct Archive {
     private var blockIndex: UInt32 = 0xFFFFFFFF // it can have any value before first call (if outBuffer = 0)
     private var outBuffer = UnsafeMutablePointer<UInt8>(bitPattern: 0)
     private var outBufferSize: Int = 0 // it can have any value before first call (if outBuffer = 0)
-
+    
     public init(fileURL: URL) throws {
         _ = moduleInit
         let result = fileURL.path.withCString { pathPtr in
@@ -37,12 +36,7 @@ public struct Archive {
         FileInStream_CreateVTable(&self.archiveStream)
         LookToRead2_CreateVTable(&self.lookStream, 0)
         self.lookStream.buf = nil
-
-        guard let buf = allocImp.Alloc(nil, Archive.inputBufSize)?.assumingMemoryBound(to: UInt8.self) else {
-            throw LZMAError.noMemory
-        }
-        self.lookStream.buf = buf
-        self.lookStream.bufSize = Archive.inputBufSize
+        self.lookStream.bufSize = 0
         withUnsafePointer(to: &self.archiveStream.vt) { ptr in
             self.lookStream.realStream = ptr
         }
@@ -74,31 +68,33 @@ public struct Archive {
             } else {
                 mtime = nil
             }
-            let entry = Entry(index: i, path: filename, uncompressedSize: filesize, directory: isDirectory, modified: mtime)
-            // 一回デコードしておくとextractに成功する
-            let data = self.extract(entry: entry)
+            let entry = Entry(index: i, path: filename, uncompressedSize: filesize, directory: isDirectory, modified: mtime, archive: self)
             return entry
         }
     }
     
     // TODO: super large file
-    public mutating func extract(entry: Entry) -> Data? {
+    public func extract(entry: Entry) throws -> Data {
+        let inputBufSize = 1 << 18
         var offset: Int = 0
         var outSizeProcessed: Int = 0
-//        return withUnsafeMutablePointer(to: &self.outBuffer) { ptr -> Data? in
-//            SzArEx_Extract(&self.db, &self.lookStream.vt, entry.index, &self.blockIndex, ptr, &self.outBufferSize, &offset, &outSizeProcessed, &allocImp, &allocTempImp)
-//            if let pointee = ptr.pointee {
-//                return Data(bytes: pointee.advanced(by: offset), count: outSizeProcessed)
-//            } else {
-//                return nil
-//            }
-//        }
+        guard let buf = self.allocImp.Alloc(nil, inputBufSize)?.assumingMemoryBound(to: UInt8.self) else {
+            throw LZMAError.noMemory
+        }
+        self.lookStream.buf = buf
+        self.lookStream.bufSize = inputBufSize
+        defer {
+            self.allocImp.Free(nil, buf)
+        }
 
-        SzArEx_Extract(&self.db, &self.lookStream.vt, entry.index, &self.blockIndex, &self.outBuffer, &self.outBufferSize, &offset, &outSizeProcessed, &self.allocImp, &self.allocTempImp)
+        let result = SzArEx_Extract(&self.db, &self.lookStream.vt, entry.index, &self.blockIndex, &self.outBuffer, &self.outBufferSize, &offset, &outSizeProcessed, &self.allocImp, &self.allocTempImp)
+        if result != 0 {
+            throw LZMAError.badFile
+        }
         if let pointee = self.outBuffer {
             return Data(bytes: pointee.advanced(by: offset), count: outSizeProcessed)
         } else {
-            return nil
+            throw LZMAError.badFile
         }
 
     }
