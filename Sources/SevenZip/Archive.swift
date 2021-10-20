@@ -9,6 +9,11 @@ enum LZMAError: Error {
     case noMemory
 }
 
+private var moduleInit: Void = {
+    // Need to run only once
+    CrcGenerateTable()
+}()
+
 public struct Archive {
     private static let inputBufSize = 1 << 18
     private(set) var entries: [Entry] = []
@@ -22,6 +27,7 @@ public struct Archive {
     private var outBufferSize: Int = 0 // it can have any value before first call (if outBuffer = 0)
 
     public init(fileURL: URL) throws {
+        _ = moduleInit
         let result = fileURL.path.withCString { pathPtr in
             return InFile_Open(&self.archiveStream.file, pathPtr)
         }
@@ -42,8 +48,6 @@ public struct Archive {
         }
         SevenZip_LookToRead2_Init(&self.lookStream)
         
-        CrcGenerateTable()
-
         SzArEx_Init(&self.db)
         if SzArEx_Open(&self.db, &self.lookStream.vt, &self.allocImp, &self.allocTempImp) != 0 {
             throw LZMAError.badFile
