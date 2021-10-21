@@ -15,7 +15,7 @@ private var moduleInit: Void = {
 }()
 
 public class Archive {
-    private(set) var entries: [Entry] = []
+    private(set) public var entries: [Entry] = []
     private var allocImp = ISzAlloc(Alloc: SzAlloc, Free: SzFree)
     private var allocTempImp = ISzAlloc(Alloc: SzAlloc, Free: SzFree)
     private var db = CSzArEx()
