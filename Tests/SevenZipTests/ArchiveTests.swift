@@ -1,4 +1,3 @@
-import CryptoKit
 import XCTest
 @testable import SevenZip
 
@@ -11,13 +10,17 @@ final class ArchiveSpecTests: XCTestCase {
         XCTAssertEqual(entry.uncompressedSize, 1094)
         XCTAssertFalse(entry.directory)
         let data = try archive.extract(entry: entry)
-        XCTAssertEqual(SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined(), "b28b7b6753000c2e5fe368ef69f0c7c8b09de048f8fd140cda102d736c26433b")
+        XCTAssertEqual(data.sha256Digest, "b28b7b6753000c2e5fe368ef69f0c7c8b09de048f8fd140cda102d736c26433b")
     }
     
     func testLargeFile() throws {
         guard let url = Bundle.module.url(forResource: "largefile", withExtension: "7z") else { XCTFail(); return }
         let archive = try Archive(fileURL: url)
-        let data = try archive.extract(entry: archive.entries[0])
-        XCTAssertEqual(SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined(), "b28b7b6753000c2e5fe368ef69f0c7c8b09de048f8fd140cda102d736c26433b")
+        let entry = archive.entries.first!
+        XCTAssertEqual(entry.path, "631px-FullMoon2010.bmp")
+        var data = try archive.extract(entry: entry)
+        XCTAssertEqual(data.sha256Digest, "d666500f1a28b5a40d09a2a1e7558cd3cdd60120b2d4bba0dcf05e78b41b075e")
+        data = try archive.extract(entry: entry, bufSize: Int(entry.uncompressedSize))
+        XCTAssertEqual(data.sha256Digest, "d666500f1a28b5a40d09a2a1e7558cd3cdd60120b2d4bba0dcf05e78b41b075e")
     }
 }
