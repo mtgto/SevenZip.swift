@@ -93,7 +93,7 @@ let package = Package(
                 "7zStream.c",
             ],
             cSettings: [
-                //.define("")
+                // .define("_SZ_ALLOC_DEBUG") // if you want to debug alloc/free operations to stderr.
             ]
         ),
         .testTarget(
