@@ -80,6 +80,13 @@ public class Archive {
         }
     }
     
+    deinit {
+        if let pointee = self.outBuffer {
+            self.allocImp.Free(nil, pointee)
+        }
+        SzArEx_Free(&self.db, &self.allocImp)
+    }
+    
     // TODO: super large file
     public func extract(entry: Entry, bufSize: Int = 1 << 18) throws -> Data {
         var offset: Int = 0
@@ -102,6 +109,5 @@ public class Archive {
         } else {
             throw LZMAError.badFile
         }
-
     }
 }
