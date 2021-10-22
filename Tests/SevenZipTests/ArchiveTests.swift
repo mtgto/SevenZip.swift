@@ -23,4 +23,12 @@ final class ArchiveSpecTests: XCTestCase {
         data = try archive.extract(entry: entry, bufSize: Int(entry.uncompressedSize))
         XCTAssertEqual(data.sha256Digest, "d666500f1a28b5a40d09a2a1e7558cd3cdd60120b2d4bba0dcf05e78b41b075e")
     }
+    
+    func testUtf8Archive() throws {
+        guard let url = Bundle.module.url(forResource: "utf8", withExtension: "7z") else { XCTFail(); return }
+        let archive = try Archive(fileURL: url)
+        XCTAssertTrue(archive.entries.contains { $0.path == "日本語🧔‍♂️🍺"})
+        XCTAssertTrue(archive.entries.contains { $0.path.contains("これは月の画像です.jpg") })
+        XCTAssertTrue(archive.entries.contains { $0.path.contains("Здравствуйте.jpg") })
+    }
 }
