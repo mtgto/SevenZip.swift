@@ -9,7 +9,7 @@ let package = Package(
     products: [
         .library(
             name: "SevenZip",
-            targets: ["SevenZip"]),
+            targets: ["SevenZip"])
     ],
     targets: [
         .target(
@@ -69,7 +69,7 @@ let package = Package(
                 "Util/Lzma/LzmaUtil.c",
                 "Util/LzmaLib/LzmaLibExports.c",
                 "Util/SfxSetup/Precomp.c",
-                "Util/SfxSetup/SfxSetup.c"
+                "Util/SfxSetup/SfxSetup.c",
             ],
             sources: [
                 "7zAlloc.c",

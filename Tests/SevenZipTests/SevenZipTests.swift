@@ -1,4 +1,5 @@
 import XCTest
+
 @testable import SevenZip
 
 final class SevenZipTests: XCTestCase {

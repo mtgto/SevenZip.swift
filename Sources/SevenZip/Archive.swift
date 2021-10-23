@@ -21,10 +21,10 @@ public class Archive {
     private var db = CSzArEx()
     private var archiveStream = CFileInStream()
     private var lookStream = CLookToRead2()
-    private var blockIndex: UInt32 = 0xFFFFFFFF // it can have any value before first call (if outBuffer = 0)
+    private var blockIndex: UInt32 = 0xFFFF_FFFF  // it can have any value before first call (if outBuffer = 0)
     private var outBuffer = UnsafeMutablePointer<UInt8>(bitPattern: 0)
-    private var outBufferSize: Int = 0 // it can have any value before first call (if outBuffer = 0)
-    
+    private var outBufferSize: Int = 0  // it can have any value before first call (if outBuffer = 0)
+
     public init(fileURL: URL) throws {
         _ = moduleInit
         let result = fileURL.path.withCString { pathPtr in
@@ -48,7 +48,7 @@ public class Archive {
             self.lookStream.realStream = ptr
         }
         SevenZip_LookToRead2_Init(&self.lookStream)
-        
+
         SzArEx_Init(&self.db)
         if SzArEx_Open(&self.db, &self.lookStream.vt, &self.allocImp, &self.allocTempImp) != 0 {
             throw LZMAError.badFile
@@ -79,14 +79,14 @@ public class Archive {
             return entry
         }
     }
-    
+
     deinit {
         if let pointee = self.outBuffer {
             self.allocImp.Free(nil, pointee)
         }
         SzArEx_Free(&self.db, &self.allocImp)
     }
-    
+
     // TODO: super large file
     public func extract(entry: Entry, bufSize: Int = 1 << 18) throws -> Data {
         var offset: Int = 0
@@ -100,7 +100,9 @@ public class Archive {
             self.allocImp.Free(nil, buf)
         }
 
-        let result = SzArEx_Extract(&self.db, &self.lookStream.vt, entry.index, &self.blockIndex, &self.outBuffer, &self.outBufferSize, &offset, &outSizeProcessed, &self.allocImp, &self.allocTempImp)
+        let result = SzArEx_Extract(
+            &self.db, &self.lookStream.vt, entry.index, &self.blockIndex, &self.outBuffer, &self.outBufferSize, &offset, &outSizeProcessed,
+            &self.allocImp, &self.allocTempImp)
         if result != 0 {
             throw LZMAError.badFile
         }

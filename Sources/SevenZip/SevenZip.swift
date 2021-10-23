@@ -2,5 +2,5 @@
 // SPDX-License-Identifier: MIT
 
 public struct SevenZip {
-  let text = "Hello, World!"
+    let text = "Hello, World!"
 }
