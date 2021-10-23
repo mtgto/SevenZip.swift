@@ -65,10 +65,10 @@ public class Archive {
             guard let filename = String(data: Data(bytes: temp, count: len * MemoryLayout<UInt16>.size - 1), encoding: .utf16LittleEndian) else {
                 throw LZMAError.badFile
             }
-            let filesize = SevenZip_SzArEx_GetFileSize(&self.db, Int(i))
-            let isDirectory = SevenZip_SzArEx_IsDir(&self.db, Int(i)) != 0
+            let filesize = SevenZip_SzArEx_GetFileSize(&self.db, i)
+            let isDirectory = SevenZip_SzArEx_IsDir(&self.db, i) != 0
             let mtime: Date?
-            if SevenZip_SzBitWithVals_Check(&db.MTime, Int(i)) == 0 {
+            if SevenZip_SzBitWithVals_Check(&db.MTime, i) == 0 {
                 let high: UInt64 = UInt64(db.MTime.Vals[Int(i)].High)
                 let low: UInt64 = UInt64(db.MTime.Vals[Int(i)].Low)
                 mtime = Date(timeIntervalSince1970: TimeInterval((high << 32 | low) / 10_000_000 - UInt64(11_644_473_600)))
