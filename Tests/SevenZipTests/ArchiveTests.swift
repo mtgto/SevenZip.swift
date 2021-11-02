@@ -41,4 +41,18 @@ final class ArchiveSpecTests: XCTestCase {
         XCTAssertTrue(archive.entries.contains { $0.path.contains("これは月の画像です.jpg") })
         XCTAssertTrue(archive.entries.contains { $0.path.contains("Здравствуйте.jpg") })
     }
+
+    func testEmptyArchive() throws {
+        guard let url = Bundle.module.url(forResource: "empty", withExtension: "7z") else {
+            XCTFail()
+            return
+        }
+        let archive = try Archive(fileURL: url)
+        guard let entry = archive.entries.first else {
+            XCTFail()
+            return
+        }
+        let data = try archive.extract(entry: entry)
+        XCTAssertEqual(data.count, 0)
+    }
 }

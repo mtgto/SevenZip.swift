@@ -89,6 +89,9 @@ public class Archive {
 
     // TODO: super large file
     public func extract(entry: Entry, bufSize: Int = 1 << 18) throws -> Data {
+        if entry.uncompressedSize == 0 || entry.directory {
+            return Data()
+        }
         var offset: Int = 0
         var outSizeProcessed: Int = 0
         guard let buf = self.allocImp.Alloc(nil, bufSize)?.assumingMemoryBound(to: UInt8.self) else {
