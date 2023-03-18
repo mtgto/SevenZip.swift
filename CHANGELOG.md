@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.1.2 (2023-03-19)
+
+- Bump up LZMA SDK to v22.01
+
 ## v0.1.1 (2021-11-02)
 
 - Fix to be able extract empty file

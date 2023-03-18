@@ -1,6 +1,6 @@
 # SevenZip.swift
 
-A tiny Swift library to extract 7zip archive using [LZMA SDK](https://www.7-zip.org/sdk.html).
+A tiny Swift library to extract 7zip archive using [LZMA SDK v22.01](https://www.7-zip.org/sdk.html).
 
 ## Feature
 
