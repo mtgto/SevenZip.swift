@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.1.3 (2023-07-02)
+
+- Bump up LZMA SDK to v23.01
+
 ## v0.1.2 (2023-03-19)
 
 - Bump up LZMA SDK to v22.01

@@ -19,7 +19,7 @@ int SevenZip_SzBitWithVals_Check(const CSzBitUi64s *p, UInt32 i) {
     return SzBitWithVals_Check(p, i);
 }
 
-// #define LookToRead2_Init(p) { (p)->pos = (p)->size = 0; }
+// #define LookToRead2_INIT(p) { (p)->pos = (p)->size = 0; }
 void SevenZip_LookToRead2_Init(CLookToRead2 *p) {
-    LookToRead2_Init(p);
+    LookToRead2_INIT(p);
 }

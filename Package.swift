@@ -59,6 +59,7 @@ let package = Package(
                 "Sha256.c",
                 "Sha256Opt.c",
                 "Sort.c",
+                "SwapBytes.c",
                 "Threads.c",
                 "XzDec.c",
                 "XzEnc.c",
