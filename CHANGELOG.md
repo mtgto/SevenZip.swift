@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.1.4 (2023-08-23)
+
+- Set unsafeFlags `march=armv8+crc` for iOS build (#2)
+- Set minimum platform versions
+
 ## v0.1.3 (2023-07-02)
 
 - Bump up LZMA SDK to v23.01
