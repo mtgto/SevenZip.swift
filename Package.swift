@@ -6,6 +6,9 @@ import PackageDescription
 
 let package = Package(
     name: "SevenZip",
+    platforms: [
+        .iOS(.v13), .macOS(.v10_15), .tvOS(.v13), .watchOS(.v6) // Using SHA256 of CryptoKit
+    ],
     products: [
         .library(
             name: "SevenZip",
