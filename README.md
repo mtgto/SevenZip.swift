@@ -6,6 +6,11 @@ A tiny Swift library to extract 7zip archive using [LZMA SDK v23.01](https://www
 
 - [x] Extract a file from 7z archive file to memory
 
+## Requirements
+
+- iOS 13+
+- macOS 10.15+
+
 ## Not supported features
 
 - Extract encrypted files
@@ -29,6 +34,8 @@ let data = try archive.extract(entry: entry)
 ### Swift Package Manager
 
 Add `https://github.com/mtgto/SevenZip.swift` to your Package.swift.
+
+**IMPORTANT NOTE**: If you are using this library, you must specify git revision, not by version. See [#1 comment](https://github.com/mtgto/SevenZip.swift/issues/1#issuecomment-1690084540) for details.
 
 ## Related projects
 
