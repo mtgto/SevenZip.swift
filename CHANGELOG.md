@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.2.0 (2023-08-27)
+
+- Change unsafeFlags to `-mcrc` for iOS build (#3)
+
 ## v0.1.4 (2023-08-23)
 
 - Set unsafeFlags `march=armv8+crc` for iOS build (#2)
