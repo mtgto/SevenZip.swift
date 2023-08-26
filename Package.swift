@@ -100,7 +100,7 @@ let package = Package(
             ],
             cSettings: [
                 // .define("_SZ_ALLOC_DEBUG") // if you want to debug alloc/free operations to stderr.
-                .unsafeFlags(["-march=armv8+crc"], .when(platforms: [.iOS]))
+                .unsafeFlags(["-mcrc"], .when(platforms: [.iOS]))
             ]
         ),
         .testTarget(
