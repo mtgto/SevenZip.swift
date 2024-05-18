@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.2.1 (2024-05-18)
+
+- Bump up LZMA SDK to v24.05
+
 ## v0.2.0 (2023-08-27)
 
 - Change unsafeFlags to `-mcrc` for iOS build (#3)
