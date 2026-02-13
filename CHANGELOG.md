@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.2.5 (2026-02-12)
+
+- Bump up LZMA SDK to v26.00
+
 ## v0.2.4 (2026-02-11)
 
 - Bump up LZMA SDK to v25.01
