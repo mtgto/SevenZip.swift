@@ -19,7 +19,11 @@ public class Archive {
     private var allocImp = ISzAlloc(Alloc: SzAlloc, Free: SzFree)
     private var allocTempImp = ISzAlloc(Alloc: SzAlloc, Free: SzFree)
     private var db = CSzArEx()
-    private var archiveStream = CFileInStream()
+    private let archiveStream: UnsafeMutablePointer<CFileInStream> = {
+        let ptr = UnsafeMutablePointer<CFileInStream>.allocate(capacity: 1)
+        ptr.initialize(to: CFileInStream())
+        return ptr
+    }()
     private var lookStream = CLookToRead2()
     private var blockIndex: UInt32 = 0xFFFF_FFFF  // it can have any value before first call (if outBuffer = 0)
     private var outBuffer = UnsafeMutablePointer<UInt8>(bitPattern: 0)
@@ -28,12 +32,12 @@ public class Archive {
     public init(fileURL: URL) throws {
         _ = moduleInit
         let result = fileURL.path.withCString { pathPtr in
-            return InFile_Open(&self.archiveStream.file, pathPtr)
+            return InFile_Open(&self.archiveStream.pointee.file, pathPtr)
         }
         if result != 0 {
             throw LZMAError.badFile
         }
-        FileInStream_CreateVTable(&self.archiveStream)
+        FileInStream_CreateVTable(self.archiveStream)
         LookToRead2_CreateVTable(&self.lookStream, 0)
         let bufSize = 1 << 18
         guard let buf = self.allocImp.Alloc(nil, bufSize)?.assumingMemoryBound(to: UInt8.self) else {
@@ -44,9 +48,7 @@ public class Archive {
         defer {
             self.allocImp.Free(nil, buf)
         }
-        withUnsafePointer(to: &self.archiveStream.vt) { ptr in
-            self.lookStream.realStream = ptr
-        }
+        self.lookStream.realStream = self.archiveStream.pointer(to: \.vt)
         SevenZip_LookToRead2_Init(&self.lookStream)
 
         SzArEx_Init(&self.db)
@@ -85,6 +87,8 @@ public class Archive {
             self.allocImp.Free(nil, pointee)
         }
         SzArEx_Free(&self.db, &self.allocImp)
+        self.archiveStream.deinitialize(count: 1)
+        self.archiveStream.deallocate()
     }
 
     // TODO: super large file
