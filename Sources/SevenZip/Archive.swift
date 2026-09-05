@@ -15,7 +15,30 @@ private var moduleInit: Void = {
 }()
 
 public class Archive {
-    private(set) public var entries: [Entry] = []
+    /// The files the archive holds, rebuilt on every access.
+    ///
+    /// `Entry` keeps a strong reference to the archive it came from, so keeping the array in a
+    /// stored property forms a reference cycle: the archive is never released, and its file
+    /// handle, its index and `outBuffer` stay alive for the rest of the process even after the
+    /// last caller has dropped it. The per-file data lives in `entryRecords` instead, and the
+    /// `Entry` values -- which are what carries the back reference -- are made on demand.
+    public var entries: [Entry] {
+        entryRecords.map { record in
+            Entry(
+                index: record.index, path: record.path, uncompressedSize: record.uncompressedSize,
+                directory: record.directory, modified: record.modified, archive: self)
+        }
+    }
+
+    /// Everything `Entry` carries except the back reference to the archive.
+    private struct EntryRecord {
+        let index: UInt32
+        let path: String
+        let uncompressedSize: UInt64
+        let directory: Bool
+        let modified: Date?
+    }
+    private var entryRecords: [EntryRecord] = []
     private var allocImp = ISzAlloc(Alloc: SzAlloc, Free: SzFree)
     private var allocTempImp = ISzAlloc(Alloc: SzAlloc, Free: SzFree)
     private var db = CSzArEx()
@@ -55,7 +78,7 @@ public class Archive {
         if SzArEx_Open(&self.db, &self.lookStream.vt, &self.allocImp, &self.allocTempImp) != 0 {
             throw LZMAError.badFile
         }
-        self.entries = try (0..<self.db.NumFiles).map { i in
+        self.entryRecords = try (0..<self.db.NumFiles).map { i in
             let len = SzArEx_GetFileNameUtf16(&self.db, Int(i), nil)
             guard let temp = SzAlloc(nil, len * MemoryLayout<UInt16>.size)?.assumingMemoryBound(to: UInt16.self) else {
                 throw LZMAError.noMemory
@@ -77,8 +100,7 @@ public class Archive {
             } else {
                 mtime = nil
             }
-            let entry = Entry(index: i, path: filename, uncompressedSize: filesize, directory: isDirectory, modified: mtime, archive: self)
-            return entry
+            return EntryRecord(index: i, path: filename, uncompressedSize: filesize, directory: isDirectory, modified: mtime)
         }
     }
 
