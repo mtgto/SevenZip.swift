@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.4.1 (2026-09-17)
+
+- Bump up LZMA SDK to v26.03
+
 ## v0.4.0 (2026-09-06)
 
 - BREAKING: Remove Entry.archive (#9)
