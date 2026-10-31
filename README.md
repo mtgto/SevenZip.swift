@@ -35,7 +35,7 @@ let data = try archive.extract(entry: entry)
 
 Add `https://github.com/mtgto/SevenZip.swift` to your Package.swift.
 
-**IMPORTANT NOTE**: If you are using this library, you must specify git revision, not by version. See [#1 comment](https://github.com/mtgto/SevenZip.swift/issues/1#issuecomment-1690084540) for details.
+**NOTE**: v0.4.3 and earlier required specifying a git revision instead of a version because of `unsafeFlags`. See [#1 comment](https://github.com/mtgto/SevenZip.swift/issues/1#issuecomment-1690084540) for details. Since v0.5.0 you can specify a version as usual.
 
 ## Related projects
 

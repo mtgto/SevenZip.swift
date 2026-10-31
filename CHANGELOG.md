@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.5.0 (2026-10-31)
+
+- Remove `unsafeFlags(["-mcrc"])` from Package.swift
+  - The hardware CRC32 code in 7zCrc.c enables the instructions by itself, so the flag is no longer needed on iOS
+  - You can now depend on this package by version instead of by git revision
+
 ## v0.4.3 (2026-10-30)
 
 - Bump up LZMA SDK to v26.05
