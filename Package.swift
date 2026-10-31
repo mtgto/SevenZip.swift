@@ -103,7 +103,6 @@ let package = Package(
                 // Ppmd7Dec.c are already part of the target's sources.
                 .define("Z7_PPMD_SUPPORT"),
                 // .define("_SZ_ALLOC_DEBUG") // if you want to debug alloc/free operations to stderr.
-                .unsafeFlags(["-mcrc"], .when(platforms: [.iOS])),
             ]
         ),
         .testTarget(
