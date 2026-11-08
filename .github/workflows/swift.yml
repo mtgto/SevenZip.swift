@@ -3,12 +3,20 @@ name: Swift
 on:
   push:
     branches: [ main ]
-    paths-ignore:
-      - '*.md'
+    paths:
+      - 'Package.swift'
+      - 'Package.resolved'
+      - 'Sources/**'
+      - 'Tests/**'
+      - '.github/workflows/swift.yml'
   pull_request:
     branches: [ main ]
-    paths-ignore:
-      - '*.md'
+    paths:
+      - 'Package.swift'
+      - 'Package.resolved'
+      - 'Sources/**'
+      - 'Tests/**'
+      - '.github/workflows/swift.yml'
 
 jobs:
   build:
